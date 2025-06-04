@@ -2,5 +2,11 @@
 name = "large-json-array"
 version = "0.1.0"
 edition = "2024"
+authors = ["Ilya Evlanov <evlanov.ilya@gmail.com>"]
+license = "MIT"
+description = "A streaming JSON‐array parser that yields one object at a time"
+repository = "https://github.com/bambolelooo/large-json-array"
+keywords = ["json", "stream", "parser"]
+categories = ["data-structures", "parser-implementations"]
 
 [dependencies]
