@@ -2,8 +2,8 @@ use large_json_array::JsonStream;
 use serde_json::Value;
 use std::io::BufReader;
 use std::time::Instant;
-mod helpers;
-use helpers::*;
+mod common;
+use common::helpers::*;
 
 fn main() {
     let mut john_count = 0;
