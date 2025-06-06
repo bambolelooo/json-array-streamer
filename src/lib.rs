@@ -1,14 +1,20 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub mod error;
+pub mod json_stream;
+
+pub use error::JsonError;
+pub use json_stream::JsonStream;
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn parses_simple_array() {
+        let data = r#"[{"foo":1}, {"bar":2}]"#;
+        let reader = std::io::Cursor::new(data);
+        let mut it = JsonStream::new(reader);
+        assert_eq!(it.next().unwrap().unwrap()["foo"], 1);
+        assert_eq!(it.next().unwrap().unwrap()["bar"], 2);
+        assert!(it.next().is_none());
     }
 }
