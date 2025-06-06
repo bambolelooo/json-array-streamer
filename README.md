@@ -77,8 +77,6 @@ In your `Cargo.toml`:
 large-json-array = { git = "https://github.com/bambolelooo/large-json-array" }
 ```
 
-*(Update with your actual GitHub URL if publishing)*
-
 ## ❗ Limitations
 
 * Assumes well-formed JSON arrays of objects (e.g., `[ {...}, {...}, ... ]`)
