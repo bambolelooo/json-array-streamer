@@ -39,15 +39,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ````
 
-## 📦 Crate Structure
-
-```
-src/
-├── bin/               # Optional binaries
-├── error.rs           # Custom error type `JsonError`
-├── json_stream.rs     # Streaming iterator implementation
-├── lib.rs             # Library entry point
-```
 
 ## ⚙️ How It Works
 
