@@ -47,7 +47,7 @@ Generate a large json file first:
     cargo run --example generate_large_json  
 ```
 
-Then you can find all the johns in the json (with `--release` flag it will run faster):
+Then you can find all the Johns in the json (with `--release` flag it will run faster):
 
 ```shell
     cargo run --release --example find_johns users_5.0_gb.json    
@@ -78,8 +78,7 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-# crates.io soon
-large-json-array = { git = "https://github.com/bambolelooo/large-json-array" } 
+large-json-array = { git = "https://github.com/bambolelooo/large-json-array" }
 ```
 
 ## ❗ Limitations
