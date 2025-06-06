@@ -46,13 +46,26 @@ impl User {
     }
 }
 
+fn loading(num_of_loading_elements: usize, loading_fraction: f64) {
+    print!(
+        "\r{}{}",
+        "#".repeat((num_of_loading_elements as f64 * loading_fraction) as usize + 1),
+        "-".repeat(
+            num_of_loading_elements
+                - (num_of_loading_elements as f64 * loading_fraction) as usize
+                - 1
+        )
+    );
+    io::stdout().flush().unwrap();
+}
+
 fn main() {
     let mut input = String::new();
     let size_in_gb: f64;
     loop {
         input.clear();
 
-        println!("Enter the size of the generated JSON file in GB:");
+        println!("Enter the size of the JSON file to be generated in GB:");
         io::stdin()
             .read_line(&mut input)
             .expect("Failed to read line");
@@ -66,13 +79,20 @@ fn main() {
         }
     }
 
-    let num_of_users = (size_in_gb * 2.80888e6) as usize;
-    let path = format!("tests/data/users_{:.1}_gb.json", size_in_gb);
+    let num_of_users = (size_in_gb * 2.80888e6 * 1.04572) as usize;
+    let path = format!("examples/users_{:.1}_gb.json", size_in_gb);
     println!("Writing users to {}", path);
     let mut file = File::create(path.as_str()).unwrap();
     let mut buffer = String::new();
     let mut array = JSONArrayWriter::new(&mut buffer);
-    for _ in 0..num_of_users {
+
+    for i in 1..num_of_users + 1 {
+        let num_of_loading_elements = 20;
+        let loading_fraction = i as f64 / num_of_users as f64;
+        if i % (num_of_users / num_of_loading_elements) == 0 {
+            loading(num_of_loading_elements, loading_fraction);
+        }
+
         let user = User::new();
         let mut user_obj = array.object();
         user_obj.value("name", &user.name);
@@ -100,7 +120,19 @@ fn main() {
     array.end();
     file.write_all(buffer.as_bytes()).unwrap();
     println!(
-        "Finished writing {}! Now you can run tests on this file",
+        "\n\nFinished writing {}! Now you can run examples on this file",
         path
     );
+    println!("\ntry this:\n");
+    if size_in_gb >= 0.5 {
+        println!(
+            "cargo run --release --example find_johns users_{:.1}_gb.json",
+            size_in_gb
+        );
+    } else {
+        println!(
+            "cargo run --example find_johns users_{:.1}_gb.json",
+            size_in_gb
+        )
+    };
 }

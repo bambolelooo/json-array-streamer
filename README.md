@@ -39,6 +39,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ````
 
+### You can also run the examples, provided in the `/examples` directory:
+
+Generate a large json file first:
+
+```shell
+    cargo run --example generate_large_json  
+```
+
+Then you can find all the Johns in the json (with `--release` flag it will run faster):
+
+```shell
+    cargo run --release --example find_johns users_5.0_gb.json    
+```
 
 ## ⚙️ How It Works
 
