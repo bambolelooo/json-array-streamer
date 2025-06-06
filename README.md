@@ -78,7 +78,7 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-large-json-array = { git = "https://github.com/bambolelooo/large-json-array" }
+large-json-array = "0.1.0"
 ```
 
 ## ❗ Limitations
