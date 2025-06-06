@@ -2,3 +2,4 @@
 .idea
 /src/bin/sandbox.rs
 /tests/data/
+/examples/*.json
