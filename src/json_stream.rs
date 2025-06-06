@@ -10,7 +10,7 @@ pub struct JsonStream<R: Read> {
     in_string: bool,
     brace_count: u16,
     inside_array: bool,
-    object_buffer: String, // accumulates characters of the current object
+    object_buffer: String, // characters of the current object
 }
 
 impl<R: Read> JsonStream<R> {
@@ -34,7 +34,6 @@ impl<R: Read> JsonStream<R> {
 
             match c {
                 '"' => {
-                    // toggle in_string unless escaped
                     let mut backslashes = 0;
                     while self.object_buffer.chars().rev().nth(backslashes) == Some('\\') {
                         backslashes += 1;
@@ -54,20 +53,15 @@ impl<R: Read> JsonStream<R> {
                 '}' if !self.in_string => {
                     self.brace_count -= 1;
                     if self.brace_count == 0 {
-                        // We have one complete object in `object_buffer`.
                         if self.object_buffer.trim().is_empty() {
-                            // e.g. empty braces or spurious; just clear and continue
                             self.object_buffer.clear();
                             continue;
                         }
 
-                        // 1) take out the exact JSON‐text for this object
                         let obj_str = self.object_buffer.clone();
 
-                        // 2) clear the buffer for the next object
                         self.object_buffer.clear();
 
-                        // 3) skip any commas or whitespace after this object
                         while let Some(next_ch) = chars.peek() {
                             if next_ch.is_whitespace() || *next_ch == ',' {
                                 chars.next();
@@ -75,6 +69,7 @@ impl<R: Read> JsonStream<R> {
                                 break;
                             }
                         }
+
                         // add remaining chars to buffer
                         self.temp = chars.collect();
 
