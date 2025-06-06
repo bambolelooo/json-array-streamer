@@ -1,4 +1,3 @@
-use large_json_array::JsonStream;
 use std::fs::File;
 use std::{env, io};
 
@@ -40,5 +39,3 @@ pub fn load_from_env_or_ask() -> File {
     }
     file
 }
-
-fn main() {}
