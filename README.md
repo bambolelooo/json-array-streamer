@@ -39,14 +39,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ````
 
-## 📦 Crate Structure
+### You can also run the examples, provided in the `/examples` directory:
 
+Generate a large json file first:
+
+```shell
+    cargo run --example generate_large_json  
 ```
-src/
-├── bin/               # Optional binaries
-├── error.rs           # Custom error type `JsonError`
-├── json_stream.rs     # Streaming iterator implementation
-├── lib.rs             # Library entry point
+
+Then you can find all the johns in the json (with `--release` flag it will run faster):
+
+```shell
+    cargo run --release --example find_johns users_5.0_gb.json    
 ```
 
 ## ⚙️ How It Works
@@ -74,7 +78,8 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-large-json-array = { git = "https://github.com/bambolelooo/large-json-array" }
+# crates.io soon
+large-json-array = { git = "https://github.com/bambolelooo/large-json-array" } 
 ```
 
 ## ❗ Limitations
