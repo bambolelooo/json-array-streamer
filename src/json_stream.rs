@@ -1,12 +1,12 @@
 use crate::error::JsonError;
 use serde_json::Value;
+use std::collections::VecDeque;
 use std::io::Read;
-use std::str;
 
 pub struct JsonStream<R: Read> {
     reader: R,
     buffer: Vec<u8>,
-    temp: String, // leftover chars not yet processed
+    temp: VecDeque<u8>, // leftover chars not yet processed
     in_string: bool,
     brace_count: u16,
     inside_array: bool,
@@ -18,7 +18,7 @@ impl<R: Read> JsonStream<R> {
         JsonStream {
             reader,
             buffer: vec![0; 1024],
-            temp: String::new(),
+            temp: VecDeque::new(),
             in_string: false,
             brace_count: 0,
             inside_array: false,
@@ -26,14 +26,13 @@ impl<R: Read> JsonStream<R> {
         }
     }
     pub fn find_object_in_buffer(&mut self) -> Option<Result<Value, JsonError>> {
-        let mut chars = self.temp.chars().peekable();
-        while let Some(c) = chars.next() {
-            if self.brace_count > 0 || (c == '{' && !self.in_string) {
-                self.object_buffer.push(c);
+        while let Some(c) = self.temp.pop_front() {
+            if self.brace_count > 0 || (c == b'{' && !self.in_string) {
+                self.object_buffer.push(char::from(c));
             }
 
-            match c {
-                '"' => {
+            match c as u8 {
+                b'"' => {
                     let mut backslashes = 0;
                     while self.object_buffer.chars().rev().nth(backslashes) == Some('\\') {
                         backslashes += 1;
@@ -42,15 +41,15 @@ impl<R: Read> JsonStream<R> {
                         self.in_string = !self.in_string;
                     }
                 }
-                '[' if !self.in_string && !self.inside_array => {
+                b'[' if !self.in_string && !self.inside_array => {
                     self.inside_array = true;
                     self.object_buffer.clear(); // drop the '['
                     continue;
                 }
-                '{' if !self.in_string => {
+                b'{' if !self.in_string => {
                     self.brace_count += 1;
                 }
-                '}' if !self.in_string => {
+                b'}' if !self.in_string => {
                     self.brace_count -= 1;
                     if self.brace_count == 0 {
                         if self.object_buffer.trim().is_empty() {
@@ -62,17 +61,13 @@ impl<R: Read> JsonStream<R> {
 
                         self.object_buffer.clear();
 
-                        while let Some(next_ch) = chars.peek() {
-                            if next_ch.is_whitespace() || *next_ch == ',' {
-                                chars.next();
+                        while let Some(next_ch) = self.temp.front() {
+                            if next_ch.is_ascii_whitespace() || *next_ch == b',' {
+                                self.temp.pop_front();
                             } else {
                                 break;
                             }
                         }
-
-                        // add remaining chars to buffer
-                        self.temp = chars.collect();
-
                         return Some(serde_json::from_str(&obj_str).map_err(JsonError::from));
                     }
                 }
@@ -80,8 +75,6 @@ impl<R: Read> JsonStream<R> {
             }
         }
 
-        // temp gets only unprocessed remainder
-        self.temp = chars.collect();
         None
     }
 }
@@ -97,8 +90,8 @@ impl<R: Read> Iterator for JsonStream<R> {
             if n == 0 {
                 return None;
             }
-            let chunk = str::from_utf8(&self.buffer[..n]).unwrap(); // assumes UTF-8 JSON
-            self.temp.push_str(chunk);
+            self.temp.extend(&self.buffer[..n]);
+
             return self.find_object_in_buffer();
         }
         Some(Err(JsonError::Parser))
