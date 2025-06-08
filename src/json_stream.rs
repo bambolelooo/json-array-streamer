@@ -31,7 +31,7 @@ impl<R: Read> JsonStream<R> {
                 self.object_buffer.push(char::from(c));
             }
 
-            match c as u8 {
+            match c {
                 b'"' => {
                     let mut backslashes = 0;
                     while self.object_buffer.chars().rev().nth(backslashes) == Some('\\') {
