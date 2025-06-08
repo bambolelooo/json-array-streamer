@@ -86,14 +86,21 @@ impl<R: Read> Iterator for JsonStream<R> {
         if let Some(obj) = self.find_object_in_buffer() {
             return Some(obj);
         }
-        while let Ok(n) = self.reader.read(&mut self.buffer) {
-            if n == 0 {
-                return None;
+        loop {
+            match self.reader.read(&mut self.buffer) {
+                Ok(0) => {
+                    return None;
+                }
+                Ok(n) => {
+                    self.temp.extend(&self.buffer[..n]);
+                    if let Some(obj) = self.find_object_in_buffer() {
+                        return Some(obj);
+                    }
+                }
+                Err(e) => {
+                    return Some(Err(JsonError::Io(e)));
+                }
             }
-            self.temp.extend(&self.buffer[..n]);
-
-            return self.find_object_in_buffer();
         }
-        Some(Err(JsonError::Parser))
     }
 }
