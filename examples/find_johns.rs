@@ -8,9 +8,10 @@ use common::helpers::*;
 fn main() {
     let mut john_count = 0;
     let mut user_count = 0;
-    let start_time = Instant::now();
 
     let file: std::fs::File = load_from_env_or_ask();
+
+    let start_time = Instant::now();
     let reader = BufReader::new(file);
     let stream = JsonStream::new(reader); // the streamer in used here
 
