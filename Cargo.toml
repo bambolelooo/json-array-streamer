@@ -1,6 +1,6 @@
 [package]
 name = "large-json-array"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 authors = ["Ilya Evlanov <evlanov.ilya@gmail.com>"]
 license = "MIT"
